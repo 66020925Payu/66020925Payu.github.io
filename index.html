@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบไก่ชน</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #d32f2f;
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .search-box {
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            width: 240px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        .chat-btn {
+            background-color: #ff5722;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 240px;
+            height: calc(100vh - 60px);
+            background-color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .menu-item:hover {
+            background-color: #f0f2f5;
+        }
+
+        .menu-item.active {
+            background-color: #ffccbc;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 240px;
+            margin-top: 60px;
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page */
+        .post-form {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background-color: #f0f2f5;
+            margin-bottom: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #e4e6eb;
+            padding-top: 10px;
+        }
+
+        .post-action-btn {
+            background: transparent;
+            border: none;
+            color: #65676b;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .post-action-btn:hover {
+            background-color: #f0f2f5;
+        }
+
+        .post-action-btn i {
+            margin-right: 5px;
+        }
+
+        .post {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #f0f2f5;
+        }
+
+        .post-info {
+            flex: 1;
+        }
+
+        .post-author {
+            font-weight: bold;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #65676b;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid #e4e6eb;
+        }
+
+        .post-reaction {
+            display: flex;
+            align-items: center;
+            color: #65676b;
+            font-size: 14px;
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            color: #65676b;
+            font-size: 14px;
+            border-bottom: 1px solid #e4e6eb;
+            margin-bottom: 10px;
+        }
+
+        /* Market Page */
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .market-item {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .market-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .market-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .market-details {
+            padding: 15px;
+        }
+
+        .market-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+
+        .market-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .market-specs {
+            font-size: 14px;
+            color: #65676b;
+        }
+
+        /* Farm Services Page */
+        .farm-services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .farm-service-item {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .farm-service-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .farm-service-details {
+            padding: 15px;
+        }
+
+        .farm-service-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .farm-service-rating {
+            color: #ff9800;
+            margin-bottom: 5px;
+        }
+
+        .farm-service-price {
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+
+        .farm-service-reviews {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e4e6eb;
+        }
+
+        .farm-service-review {
+            margin-bottom: 10px;
+        }
+
+        .review-author {
+            font-weight: bold;
+        }
+
+        /* Scan Rooster Page */
+        .scan-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .scan-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #d32f2f;
+        }
+
+        .scan-options {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .scan-option {
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .scan-option:hover {
+            background-color: #e64a19;
+        }
+
+        .scan-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 50px;
+            margin: 30px 0;
+        }
+
+        /* Guide Page */
+        .guide-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .guide-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #d32f2f;
+        }
+
+        .guide-section {
+            margin-bottom: 30px;
+        }
+
+        .guide-section-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ff5722;
+            border-bottom: 1px solid #e4e6eb;
+            padding-bottom: 5px;
+        }
+
+        .guide-content {
+            line-height: 1.6;
+        }
+
+        /* Chat */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            background-color: #fff;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-weight: bold;
+        }
+
+        .chat-close {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            max-width: 70%;
+        }
+
+        .message-sent {
+            margin-left: auto;
+            background-color: #ffccbc;
+            border-radius: 15px 3px 15px 15px;
+            padding: 8px 12px;
+        }
+
+        .message-received {
+            background-color: #f0f2f5;
+            border-radius: 3px 15px 15px 15px;
+            padding: 8px 12px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #e4e6eb;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e4e6eb;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            margin-left: 10px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="#" class="logo">ฟาร์มไก่ชน</a>
+            <div class="search-box">
+                <input type="text" placeholder="ค้นหา...">
+            </div>
+        </div>
+        <div class="navbar-right">
+            <button class="nav-btn">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-user"></i>
+            </button>
+            <button class="chat-btn" id="openChat">
+                <i class="fas fa-comment"></i> แชท
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="menu-item active" data-page="home">
+            <i class="fas fa-home"></i> หน้าหลัก
+        </div>
+        <div class="menu-item" data-page="market">
+            <i class="fas fa-store"></i> ตลาดซื้อขาย
+        </div>
+        <div class="menu-item" data-page="farm-services">
+            <i class="fas fa-warehouse"></i> บริการฝาก-เลี้ยง
+        </div>
+        <div class="menu-item" data-page="scan">
+            <i class="fas fa-qrcode"></i> สแกนไก่
+        </div>
+        <div class="menu-item" data-page="guide">
+            <i class="fas fa-book"></i> คู่มือการเลี้ยงไก่
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Home Page -->
+        <div class="page active" id="home">
+            <div class="post-form">
+                <input type="text" class="post-input" placeholder="คุณกำลังคิดอะไรอยู่?">
+                <div class="post-actions">
+                    <button class="post-action-btn">
+                        <i class="fas fa-image"></i> รูปภาพ
+                    </button>
+                    <button class="post-action-btn">
+                        <i class="fas fa-video"></i> วิดีโอ
+                    </button>
+                    <button class="post-action-btn">
+                        <i class="fas fa-tag"></i> แท็ก
+                    </button>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-avatar"></div>
+                    <div class="post-info">
+                        <div class="post-author">สมชาย ใจดี</div>
+                        <div class="post-time">2 ชั่วโมงที่แล้ว</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>ไก่ชนพันธุ์ตีสูงตัวใหม่ของฟาร์มเรา กำลังจะนำออกขายในเดือนหน้า ใครสนใจติดต่อได้เลย</p>
+                </div>
+                <img src="images/6.jfif" alt="ไก่ชนพันธุ์ใหม่" class="post-image">
+                <div class="post-stats">
+                    <div>❤️ 24 คน</div>
+                    <div>8 ความคิดเห็น • 3 แชร์</div>
+                </div>
+                <div class="post-footer">
+                    <button class="post-action-btn">
+                        <i class="fas fa-thumbs-up"></i> ถูกใจ
+                    </button>
+                    <button class="post-action-btn">
+                        <i class="fas fa-comment"></i> แสดงความคิดเห็น
+                    </button>
+                    <button class="post-action-btn">
+                        <i class="fas fa-share"></i> แชร์
+                    </button>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-avatar"></div>
+                    <div class="post-info">
+                        <div class="post-author">สมศรี รักไก่</div>
+                        <div class="post-time">เมื่อวาน 15:30</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>แชร์สูตรอาหารไก่ชนที่ใช้เลี้ยงตัวเด่นในฟาร์ม เติบโตไว แข็งแรง มีชัยหลายศึก</p>
+                </div>
+                <img src="images/A.jfif" alt="อาหารไก่ชน" class="post-image">
+                <div class="post-stats">
+                    <div>❤️ 56 คน</div>
+                    <div>32 ความคิดเห็น • 15 แชร์</div>
+                </div>
+                <div class="post-footer">
+                    <button class="post-action-btn">
+                        <i class="fas fa-thumbs-up"></i> ถูกใจ
+                    </button>
+                    <button class="post-action-btn">
+                        <i class="fas fa-comment"></i> แสดงความคิดเห็น
+                    </button>
+                    <button class="post-action-btn">
+                        <i class="fas fa-share"></i> แชร์
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Page -->
+        <div class="page" id="market">
+            <h2>ตลาดซื้อขาย</h2>
+            <div class="market-grid">
+                <div class="market-item">
+                    <img src="images/4.png" alt="ไก่ชนพันธุ์เหลืองหางขาว" class="market-image">
+                    <div class="market-details">
+                        <div class="market-price">฿15,000</div>
+                        <div class="market-title">ไก่ชนพันธุ์เหลืองหางขาว อายุ 1 ปี</div>
+                        <div class="market-specs">
+                            <p>น้ำหนัก: 3.2 กก.</p>
+                            <p>สายพันธุ์: เหลืองหางขาว</p>
+                            <p>ชนะมาแล้ว: 6 ครั้ง</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="market-item">
+                    <img src="images/5.jpg" alt="ไก่ชนพันธุ์เขียวเหลืองหางดำ" class="market-image">
+                    <div class="market-details">
+                        <div class="market-price">฿28,000</div>
+                        <div class="market-title">ไก่ชนพันธุ์เขียวหางดำ อายุ 2 ปี</div>
+                        <div class="market-specs">
+                            <p>น้ำหนัก: 3.5 กก.</p>
+                            <p>สายพันธุ์: เขียวหางดำ</p>
+                            <p>ชนะมาแล้ว: 12 ครั้ง</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="market-item">
+                    <img src="images/13.jpg" alt="ไก่ชนพันธุ์แดงตาเหลือง" class="market-image">
+                    <div class="market-details">
+                        <div class="market-price">฿22,000</div>
+                        <div class="market-title">ไก่ชนพันธุ์แดงตาเหลือง อายุ 1.5 ปี</div>
+                        <div class="market-specs">
+                            <p>น้ำหนัก: 3.3 กก.</p>
+                            <p>สายพันธุ์: แดงตาเหลือง</p>
+                            <p>ชนะมาแล้ว: 8 ครั้ง</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="market-item">
+                    <img src="images/10.jpg" alt="ไก่ชนพันธุ์ประดู่หางดำ" class="market-image">
+                    <div class="market-details">
+                        <div class="market-price">฿18,500</div>
+                        <div class="market-title">ไก่ชนพันธุ์ประดู่หางดำ อายุ 1.2 ปี</div>
+                        <div class="market-specs">
+                            <p>น้ำหนัก: 3.0 กก.</p>
+                            <p>สายพันธุ์: ประดู่หางดำ</p>
+                            <p>ชนะมาแล้ว: 5 ครั้ง</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farm Services Page -->
+        <div class="page" id="farm-services">
+            <h2>บริการฝาก-เลี้ยง</h2>
+            <div class="farm-services-grid">
+                <div class="farm-service-item">
+                    <img src="images/F1.jpg" alt="ฟาร์มสมชาย" class="farm-service-image">
+                    <div class="farm-service-details">
+                        <div class="farm-service-name">ฟาร์มสมชาย</div>
+                        <div class="farm-service-rating">★★★★★ (4.9)</div>
+                        <div class="farm-service-price">฿1,500 / เดือน</div>
+                        <p>บริการฝากเลี้ยงไก่ชนระดับพรีเมียม พร้อมโปรแกรมซ้อมและอาหารคุณภาพสูง</p>
+                        <div class="farm-service-reviews">
+                            <div class="farm-service-review">
+                                <span class="review-author">วิชัย:</span> บริการดีมาก ไก่แข็งแรงขึ้น ซ้อมได้ผลดี
+                            </div>
+                            <div class="farm-service-review">
+                                <span class="review-author">สมศรี:</span> ฝากมา 3 ตัวแล้ว ทุกตัวกลับมาฟอร์มดี
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="farm-service-item">
+                    <img src="images/f2.jpg" alt="ฟาร์มสมศักดิ์" class="farm-service-image">
+                    <div class="farm-service-details">
+                        <div class="farm-service-name">ฟาร์มสมศักดิ์</div>
+                        <div class="farm-service-rating">★★★★☆ (4.2)</div>
+                        <div class="farm-service-price">฿1,200 / เดือน</div>
+                        <p>บริการฝากเลี้ยงไก่ชนแบบครบวงจร มีสนามซ้อมและอาหารจากธรรมชาติ</p>
+                        <div class="farm-service-reviews">
+                            <div class="farm-service-review">
+                                <span class="review-author">สมโชค:</span> บริการดี ราคาไม่แพง คุ้มค่า
+                            </div>
+                            <div class="farm-service-review">
+                                <span class="review-author">ประสิทธิ์:</span> ไก่ได้รับการดูแลดี กลับมาแข็งแรง
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="farm-service-item">
+                    <img src="images/f3.jpg" alt="ฟาร์มชัยชนะ" class="farm-service-image">
+                    <div class="farm-service-details">
+                        <div class="farm-service-name">ฟาร์มชัยชนะ</div>
+                        <div class="farm-service-rating">★★★★★ (4.7)</div>
+                        <div class="farm-service-price">฿1,800 / เดือน</div>
+                        <p>บริการฝากเลี้ยงไก่ชนระดับแชมเปี้ยน มีโค้ชผู้เชี่ยวชาญดูแล</p>
+                        <div class="farm-service-reviews">
+                            <div class="farm-service-review">
+                                <span class="review-author">ชัยวัฒน์:</span> ไก่ได้รับการซ้อมอย่างดี เป็นระบบมาก
+                            </div>
+                            <div class="farm-service-review">
+                                <span class="review-author">วิเชียร:</span> คุณภาพการดูแลระดับท็อป คุ้มค่าทุกบาท
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Rooster Page -->
+        <div class="page" id="scan">
+            <div class="scan-container">
+                <h2 class="scan-title">สแกนไก่</h2>
+                <p>สแกนไก่ของคุณเพื่อวิเคราะห์สายพันธุ์ ประเมินคุณภาพ และรับคำแนะนำในการเลี้ยงดู</p>
+                
+                <div class="scan-area">
+                    <p>แตะที่นี่เพื่อสแกนไก่ หรืออัพโหลดรูปภาพ</p>
+                </div>
+                
+                <div class="scan-options">
+                    <button class="scan-option">
+                        <i class="fas fa-camera"></i> เปิดกล้อง
+                    </button>
+                    <button class="scan-option">
+                        <i class="fas fa-upload"></i> อัพโหลดรูปภาพ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Page -->
+        <div class="page" id="guide">
+            <div class="guide-container">
+                <h2 class="guide-title">คู่มือการเลี้ยงไก่ชน</h2>
+                
+                <div class="guide-section">
+                    <h3 class="guide-section-title">การเลือกพันธุ์ไก่ชน</h3>
+                    <div class="guide-content">
+                        <p>การเลือกพันธุ์ไก่ชนที่ดีควรพิจารณาจากหลายปัจจัย ได้แก่ รูปร่าง สีขน ลักษณะหงอน ตา และขา โดยไก่ชนที่ดีควรมีลำตัวกำยำ กล้ามเนื้อแน่น ขาแข็งแรง และมีท่าทางปราดเปรียว</p>
+                        <p>สายพันธุ์ไก่ชนยอดนิยมในประเทศไทย:</p>
+                        <ul>
+                            <li>ไก่เหลืองหางขาว: เป็นสายพันธุ์ที่มีความแข็งแรง อดทน และมีแรงต่อสู้สูง</li>
+                            <li>ไก่ประดู่หางดำ: มีความดุดัน ปราดเปรียว และมีเชาว์ในการต่อสู้ดี</li>
+                            <li>ไก่พม่า: กล้ามเนื้อแน่น มีความอึด ทนทานต่อการบาดเจ็บได้ดี</li>
+                            <li>ไก่เขียวเหลืองหางดำ: มีความเร็ว ปราดเปรียว และมีเชิงชั้นเชิงสูง</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3 class="guide-section-title">การให้อาหารไก่ชน</h3>
+                    <div class="guide-content">
+                        <p>อาหารถือเป็นปัจจัยสำคัญในการเลี้ยงไก่ชนให้แข็งแรง ควรให้อาหารที่มีโปรตีนสูงเพื่อเสริมสร้างกล้ามเนื้อ</p>
+                        <p>สูตรอาหารแนะนำสำหรับไก่ชน:</p>
+                        <ul>
+                            <li>รำข้าว 50%</li>
+                            <li>ปลายข้าว 20%</li>
+                            <li>ปลาป่น 15%</li>
+                            <li>กากถั่วเหลือง 10%</li>
+                            <li>วิตามินและแร่ธาตุ 5%</li>
+                        </ul>
+                        <p>ช่วงเตรียมพร้อมก่อนการชน ควรเสริมอาหารพิเศษเช่น ไข่ต้ม น้ำผึ้ง และสมุนไพรบำรุงกำลัง</p>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3 class="guide-section-title">การฝึกซ้อมไก่ชน</h3>
+                    <div class="guide-content">
+                        <p>การฝึกซ้อมเป็นสิ่งสำคัญที่จะทำให้ไก่มีความแข็งแรง อดทน และมีเทคนิคในการต่อสู้</p>
+                        <p>โปรแกรมการฝึกซ้อมแนะนำ:</p>
+                        <ol>
+                            <li>วันที่ 1-2: วิ่งเบาๆ 15-20 นาที เพื่อเพิ่มความทนทาน</li>
+                            <li>วันที่ 3: ซ้อมปล้ำเบาๆ 5-10 นาที เพื่อฝึกเชิง</li>
+                            <li>วันที่ 4: พักฟื้น ให้อาหารบำรุง</li>
+                            <li>วันที่ 5-6: วิ่งและซ้อมปล้ำผสมผสาน 15-20 นาที</li>
+                            <li>วันที่ 7: พักฟื้นสมบูรณ์</li>
+                        </ol>
+                        <p>ระหว่างการฝึกซ้อม ควรสังเกตอาการของไก่อย่างใกล้ชิด หากไก่แสดงอาการเหนื่อยล้าหรือบาดเจ็บ ควรหยุดการซ้อมและให้พักทันที</p>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3 class="guide-section-title">การดูแลสุขภาพไก่ชน</h3>
+                    <div class="guide-content">
+                        <p>การดูแลสุขภาพไก่ชนเป็นสิ่งสำคัญที่จะทำให้ไก่มีความแข็งแรงและพร้อมสำหรับการชน</p>
+                        <p>คำแนะนำในการดูแลสุขภาพไก่ชน:</p>
+                        <ul>
+                            <li>ฉีดวัคซีนป้องกันโรคตามกำหนด</li>
+                            <li>ตรวจหาปรสิตและกำจัดอย่างสม่ำเสมอ</li>
+                            <li>ดูแลความสะอาดของคอกและน้ำดื่ม</li>
+                            <li>ให้ไก่ได้ออกกำลังกายสม่ำเสมอ</li>
+                            <li>ตรวจสอบอาการผิดปกติและรักษาอย่างทันท่วงที</li>
+                        </ul>
+                        <p>โรคที่พบบ่อยในไก่ชนและการป้องกัน:</p>
+                        <ul>
+                            <li>โรคนิวคาสเซิล: ฉีดวัคซีนป้องกันทุก 3-6 เดือน</li>
+                            <li>โรคหลอดลมอักเสบ: รักษาความสะอาดคอก ให้อยู่ในที่อากาศถ่ายเทสะดวก</li>
+                            <li>โรคฝีดาษ: ฉีดวัคซีนป้องกัน</li>
+                            <li>พยาธิภายใน: ถ่ายพยาธิทุก 3 เดือน</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <div class="chat-title">แชทกับผู้เชี่ยวชาญ</div>
+            <button class="chat-close" id="closeChat">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message message-received">
+                สวัสดีครับ มีอะไรให้ช่วยเหลือเกี่ยวกับการเลี้ยงไก่ชนไหมครับ?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="พิมพ์ข้อความ..." id="messageInput">
+            <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Add Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all menu items
+                document.querySelectorAll('.menu-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Add active class to clicked menu item
+                this.classList.add('active');
+                
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(p => {
+                    p.classList.remove('active');
+                });
+                
+                // Show the selected page
+                const pageId = this.getAttribute('data-page');
+                document.getElementById(pageId).classList.add('active');
+            });
+        });
+
+        // Chat Functions
+        const chatContainer = document.getElementById('chatContainer');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessage');
+        const openChatBtn = document.getElementById('openChat');
+        const closeChatBtn = document.getElementById('closeChat');
+
+        // Open chat
+        openChatBtn.addEventListener('click', function() {
+            chatContainer.style.display = 'block';
+        });
+
+        // Close chat
+        closeChatBtn.addEventListener('click', function() {
+            chatContainer.style.display = 'none';
+        });
+
+        // Send message
+        sendMessageBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                // Add user message
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message message-sent';
+                userMessageElement.textContent = message;
+                chatMessages.appendChild(userMessageElement);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Simulate response (in a real app, this would be an API call)
+                setTimeout(() => {
+                    const responses = [
+                        "ขอบคุณสำหรับคำถาม เดี๋ยวผมช่วยดูให้ครับ",
+                        "คำถามดีมากครับ ผมขอแนะนำให้ลองดูคู่มือการเลี้ยงไก่ของเราครับ",
+                        "ไก่ชนแต่ละสายพันธุ์มีความต้องการอาหารที่แตกต่างกัน แนะนำให้ปรึกษาผู้เชี่ยวชาญเฉพาะทางครับ",
+                        "หากคุณต้องการรายละเอียดเพิ่มเติม สามารถติดต่อเจ้าหน้าที่ได้ที่หน้าบริการฝาก-เลี้ยงครับ"
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    const responseElement = document.createElement('div');
+                    responseElement.className = 'message message-received';
+                    responseElement.textContent = randomResponse;
+                    chatMessages.appendChild(responseElement);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // Post Actions
+        document.querySelectorAll('.post-action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // In a real app, this would trigger different actions
+                if (this.textContent.includes('ถูกใจ')) {
+                    this.classList.toggle('liked');
+                    if (this.classList.contains('liked')) {
+                        this.innerHTML = '<i class="fas fa-thumbs-up"></i> ถูกใจแล้ว';
+                        this.style.color = '#d32f2f';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-thumbs-up"></i> ถูกใจ';
+                        this.style.color = '';
+                    }
+                }
+            });
+        });
+
+        // Scan Functionality
+        document.querySelectorAll('.scan-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('ฟีเจอร์นี้จะเปิดให้ใช้งานเร็วๆ นี้');
+            });
+        });
+
+        document.querySelector('.scan-area').addEventListener('click', function() {
+            alert('ฟีเจอร์นี้จะเปิดให้ใช้งานเร็วๆ นี้');
+        });
+
+        // Search Functionality
+        const searchBox = document.querySelector('.search-box input');
+        searchBox.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert('กำลังค้นหา: ' + this.value);
+                this.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
