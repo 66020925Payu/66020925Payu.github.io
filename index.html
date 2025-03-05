@@ -549,6 +549,9 @@
         <div class="menu-item" data-page="guide">
             <i class="fas fa-book"></i> คู่มือการเลี้ยงไก่
         </div>
+        <div class="menu-item" data-page="farm-management">
+            <i class="fas fa-chart-bar"></i> จัดการฟาร์ม
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -986,5 +989,459 @@
             }
         });
     </script>
+    <div class="page" id="farm-management">
+        <div class="farm-management-container">
+            <h2>จัดการฟาร์ม</h2>
+            
+            <!-- Farm Overview Card -->
+            <div class="farm-card">
+                <div class="farm-card-header">
+                    <div class="farm-card-title">ภาพรวมฟาร์ม</div>
+                </div>
+                <div class="farm-stats">
+                    <div class="farm-stat">
+                        <div class="farm-stat-number" id="totalRoosters">42</div>
+                        <div class="farm-stat-label">ไก่ทั้งหมด</div>
+                    </div>
+                    <div class="farm-stat">
+                        <div class="farm-stat-number" id="boardedRoosters">12</div>
+                        <div class="farm-stat-label">ไก่ฝาก</div>
+                    </div>
+                    <div class="farm-stat">
+                        <div class="farm-stat-number" id="soldRoosters">8</div>
+                        <div class="farm-stat-label">ไก่ขายแล้ว</div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn" id="feedScheduleBtn">กำหนดเวลาให้อาหาร</button>
+                    <button class="action-btn" id="addRoosterBtn">เพิ่มไก่</button>
+                    <button class="action-btn" id="sellRoosterBtn">ขายไก่</button>
+                </div>
+            </div>
+    
+            <!-- Roosters List Card -->
+            <div class="farm-card">
+                <div class="farm-card-header">
+                    <div class="farm-card-title">รายชื่อไก่</div>
+                </div>
+                <div class="rooster-list" id="roosterList">
+                    <div class="rooster-item">
+                        
+                        <span>ไก่เหลืองหางขาว #1</span>
+                        <div class="rooster-details">
+                            <span>อายุ 2 ปี</span>
+                            <span>น้ำหนัก 3.2 กก.</span>
+                            <span>สถานะ: พร้อมชน</span>
+                        </div>
+                    </div>
+                    <div class="rooster-item">
+                        <span>ไก่ประดู่หางดำ #2</span>
+                        <div class="rooster-details">
+                            <span>อายุ 1.5 ปี</span>
+                            <span>น้ำหนัก 3.0 กก.</span>
+                            <span>สถานะ: พักฟื้น</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    
+            <!-- Health Records Card -->
+            <div class="farm-card">
+                <div class="farm-card-header">
+                    <div class="farm-card-title">ประวัติการรักษา</div>
+                </div>
+                <ul class="health-timeline" id="healthTimeline">
+                    <li class="health-event">
+                        <strong>20 ม.ค. 2024:</strong> ฉีดวัคซีนป้องกันนิวคาสเซิล
+                    </li>
+                    <li class="health-event">
+                        <strong>15 ก.พ. 2024:</strong> ถ่ายพยาธิ ไก่ #1 และ #2
+                    </li>
+                </ul>
+                <button class="action-btn" id="addHealthRecordBtn">เพิ่มบันทึกสุขภาพ</button>
+            </div>
+        </div>
+          
+    
+        <!-- Feed Schedule Modal -->
+        <div id="feedScheduleModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>กำหนดเวลาให้อาหาร</h2>
+                <div class="feed-schedule-form">
+                    <label>เวลาให้อาหารเช้า: 
+                        <input type="time" id="morningFeedTime">
+                    </label>
+                    <label>เวลาให้อาหารเย็น: 
+                        <input type="time" id="eveningFeedTime">
+                    </label>
+                    <button id="saveFeedSchedule">บันทึก</button>
+                </div>
+            </div>
+        </div>
+        
+    
+        <!-- Add Rooster Modal -->
+        <div id="addRoosterModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>เพิ่มไก่</h2>
+                <div class="add-rooster-form">
+                    <label>ชื่อไก่: 
+                        <input type="text" id="newRoosterName">
+                    </label>
+                    <label>สายพันธุ์: 
+                        <select id="roosterBreed">
+                            <option>เหลืองหางขาว</option>
+                            <option>ประดู่หางดำ</option>
+                            <option>เขียวหางดำ</option>
+                            <option>แดงตาเหลือง</option>
+                        </select>
+                    </label>
+                    <label>อายุ (ปี): 
+                        <input type="number" id="newRoosterAge" step="0.1" min="0">
+                    </label>
+                    <label>น้ำหนัก (กก.): 
+                        <input type="number" id="newRoosterWeight" step="0.1" min="0">
+                    </label>
+                    <button id="saveNewRooster">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Add Health Record Modal -->
+        <div id="addHealthRecordModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>เพิ่มบันทึกสุขภาพ</h2>
+                <div class="health-record-form">
+                    <label>ไก่: 
+                        <select id="healthRoosterSelect">
+                            <option>ไก่เหลืองหางขาว #1</option>
+                            <option>ไก่ประดู่หางดำ #2</option>
+                        </select>
+                    </label>
+                    <label>วันที่: 
+                        <input type="date" id="healthRecordDate">
+                    </label>
+                    <label>รายละเอียด: 
+                        <textarea id="healthRecordDetails"></textarea>
+                    </label>
+                    <button id="saveHealthRecord">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        /* Farm Management Styles */
+        .farm-management-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    
+        .farm-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    
+        .farm-card-header {
+            border-bottom: 1px solid #e4e6eb;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+    
+        .farm-card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+    
+        .farm-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+    
+        .farm-stat {
+            text-align: center;
+            flex: 1;
+        }
+    
+        .farm-stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+    
+        .farm-stat-label {
+            color: #65676b;
+            font-size: 14px;
+        }
+    
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    
+        .action-btn {
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+    
+        .action-btn:hover {
+            background-color: #e64a19;
+        }
+    
+        .rooster-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    
+        .rooster-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-bottom: 1px solid #e4e6eb;
+        }
+    
+        .rooster-details {
+            display: flex;
+            justify-content: space-between;
+            color: #65676b;
+            font-size: 14px;
+        }
+    
+        .health-timeline {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    
+        .health-event {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f0f2f5;
+            border-radius: 5px;
+        }
+    
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+    
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+        }
+    
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    
+        .modal-content label {
+            display: block;
+            margin: 10px 0;
+        }
+    
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #e4e6eb;
+            border-radius: 5px;
+        }
+    </style>
+    
+    <script>
+        // Farm Management Script
+        document.addEventListener('DOMContentLoaded', () => {
+            // Feed Schedule Modal
+            const feedScheduleBtn = document.getElementById('feedScheduleBtn');
+            const feedScheduleModal = document.getElementById('feedScheduleModal');
+            const closeFeedModalBtns = feedScheduleModal.querySelectorAll('.close-modal');
+            const saveFeedScheduleBtn = document.getElementById('saveFeedSchedule');
+    
+            feedScheduleBtn.addEventListener('click', () => {
+                feedScheduleModal.style.display = 'block';
+            });
+    
+            closeFeedModalBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    feedScheduleModal.style.display = 'none';
+                });
+            });
+    
+            saveFeedScheduleBtn.addEventListener('click', () => {
+                const morningTime = document.getElementById('morningFeedTime').value;
+                const eveningTime = document.getElementById('eveningFeedTime').value;
+                
+                alert(`บันทึกเวลาให้อาหารเรียบร้อย\nเช้า: ${morningTime}\nเย็น: ${eveningTime}`);
+                
+                feedScheduleModal.style.display = 'none';
+            });
+    
+            // Add Rooster Modal
+            const addRoosterBtn = document.getElementById('addRoosterBtn');
+            const addRoosterModal = document.getElementById('addRoosterModal');
+            const closeAddRoosterBtns = addRoosterModal.querySelectorAll('.close-modal');
+            const saveNewRoosterBtn = document.getElementById('saveNewRooster');
+    
+            addRoosterBtn.addEventListener('click', () => {
+                addRoosterModal.style.display = 'block';
+            });
+    
+            closeAddRoosterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addRoosterModal.style.display = 'none';
+                });
+            });
+    
+            saveNewRoosterBtn.addEventListener('click', () => {
+                const name = document.getElementById('newRoosterName').value;
+                const breed = document.getElementById('roosterBreed').value;
+                const age = document.getElementById('newRoosterAge').value;
+                const weight = document.getElementById('newRoosterWeight').value;
+    
+                if (name && breed && age && weight) {
+                    const roosterList = document.getElementById('roosterList');
+                    const newRoosterItem = document.createElement('div');
+                    newRoosterItem.classList.add('rooster-item');
+                    newRoosterItem.innerHTML = `
+                        <span>ไก่${breed} ${name}</span>
+                        <div class="rooster-details">
+                            <span>อายุ ${age} ปี</span>
+                            <span>น้ำหนัก ${weight} กก.</span>
+                            <span>สถานะ: พร้อมชน</span>
+                        </div>
+                    `;
+                    roosterList.appendChild(newRoosterItem);
+    
+                    // Update total roosters count
+                    const totalRoostersEl = document.getElementById('totalRoosters');
+                    totalRoostersEl.textContent = parseInt(totalRoostersEl.textContent) + 1;
+    
+                    addRoosterModal.style.display = 'none';
+                } else {
+                    alert('กรุณากรอกข้อมูลให้ครบ');
+                }
+            });
+    
+            // Add Health Record Modal
+            const addHealthRecordBtn = document.getElementById('addHealthRecordBtn');
+            const addHealthRecordModal = document.getElementById('addHealthRecordModal');
+            const closeHealthRecordBtns = addHealthRecordModal.querySelectorAll('.close-modal');
+            const saveHealthRecordBtn = document.getElementById('saveHealthRecord');
+    
+            addHealthRecordBtn.addEventListener('click', () => {
+                addHealthRecordModal.style.display = 'block';
+            });
+    
+            closeHealthRecordBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addHealthRecordModal.style.display = 'none';
+                });
+            });
+    
+            saveHealthRecordBtn.addEventListener('click', () => {
+        const rooster = document.getElementById('healthRoosterSelect').value;
+        const date = document.getElementById('healthRecordDate').value;
+        const details = document.getElementById('healthRecordDetails').value;
+
+        if (date && details) {
+            // Use health tracker to add record
+            healthTracker.addHealthRecord(rooster, 
+                new Date(date).toLocaleDateString('th-TH', {
+                    day: 'numeric', 
+                    month: 'short', 
+                    year: 'numeric'
+                }), 
+                details
+            );
+
+            addHealthRecordModal.style.display = 'none';
+            alert('บันทึกข้อมูลสุขภาพเรียบร้อย');
+        } else {
+            alert('กรุณากรอกข้อมูลให้ครบ');
+        }
+    });
+
+    // Feed Schedule Advanced Features
+    const feedSchedule = {
+        morning: null,
+        evening: null,
+        
+        setSchedule(morningTime, eveningTime) {
+            this.morning = morningTime;
+            this.evening = eveningTime;
+            
+            // Optional: Set up notifications or reminders
+            this.setupNotifications();
+        },
+        
+        setupNotifications() {
+            // Placeholder for potential notification system
+            console.log(`Feed Schedule Set: Morning at ${this.morning}, Evening at ${this.evening}`);
+        },
+        
+        getRemainingTime(scheduleTime) {
+            const now = new Date();
+            const scheduleDate = new Date(now.toDateString() + ' ' + scheduleTime);
+            
+            if (scheduleDate <= now) {
+                // If schedule time has passed, set to next day
+                scheduleDate.setDate(scheduleDate.getDate() + 1);
+            }
+            
+            const timeDiff = scheduleDate.getTime() - now.getTime();
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${hours} ชั่วโมง ${minutes} นาที`;
+        }
+    };
+
+    // Enhance feed schedule saving
+    saveFeedScheduleBtn.addEventListener('click', () => {
+        const morningTime = document.getElementById('morningFeedTime').value;
+        const eveningTime = document.getElementById('eveningFeedTime').value;
+        
+        if (morningTime && eveningTime) {
+            feedSchedule.setSchedule(morningTime, eveningTime);
+            
+            alert(`บันทึกเวลาให้อาหารเรียบร้อย\nเช้า: ${morningTime}\nเย็น: ${eveningTime}\nเวลาถัดไปในอีก: ${feedSchedule.getRemainingTime(morningTime)}`);
+            
+            feedScheduleModal.style.display = 'none';
+        } else {
+            alert('กรุณาตั้งเวลาให้ครบ');
+        }
+        
+    });
+});
 </body>
 </html>
